@@ -15,7 +15,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+app.use('/',indexRouter)
+app.use('/users',usersRouter)
+// app.use('/api/v1/mangement', mangementRouter);
+// app.use('/api/v1/list', listingRouter);
+// app.use('/api/v1/details',detailsRouter)
 
 module.exports = app;

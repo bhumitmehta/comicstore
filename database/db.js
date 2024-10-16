@@ -1,19 +1,12 @@
-const pg = require('pg');
+const knex = require('knex');
+const knexConfig = require('../knexfile'); // Import knexfile.js
 
-const pool = new pg.Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'comicbookstore',
-  password: 'root',
-  port: 5432, // Default PostgreSQL port
-});
+// Determine the environment: development or production
+const environment = process.env.NODE_ENV || 'development'; 
+const config = knexConfig[environment];
 
-pool.query('SELECT NOW()', (err, res) => {
-  if (err) {
-    console.error('Error executing query', err.stack);
-  } else {
-    console.log('Current time:', res.rows[0].now);
-  }
-  pool.end(); // Optional: Close the pool when done
-});
+// Create the Knex instance with the selected environment configuration
+const db = knex(config);
 
+// Export the Knex instance for use in your models
+module.exports = db;
