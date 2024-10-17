@@ -3,15 +3,15 @@ const router = express.Router();
 const managementController = require('../controllers/managementController');
 
 
-// Add , Update , delete comics routes
-router.post('/comics',managementController.addComic,managementController);
+// Add , Update , delete comics routes 
+router.post('/comics',managementController.addComic);
 router.put('/comics/:id', managementController.updateComic);
 router.delete('/comics/:id', managementController.deleteComic);
 
 
 
 // Add ,update ,delete chapter routes
-router.post('/comics/:comicId/chapters', managementController.addChapter);
+router.post('/comics/chapters', managementController.addChapter);
 router.put('/chapters/:id', managementController.updateChapter);
 router.delete('/chapters/:id', managementController.deleteChapter);
 

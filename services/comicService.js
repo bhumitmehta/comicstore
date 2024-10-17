@@ -1,20 +1,95 @@
 const Comic = require('../models/comicModel'); // Adjust the path as necessary
-const db = require('../database/db'); // Database connection
+ // Database connection
 
 // Add a new comic book
 exports.addComic = async (comicData) => {
-    return await Comic.create(comicData);
+    try {
+        const result = await Comic.create(comicData);
+        // Check if the result indicates success (you can adjust this based on how your DB driver returns results)
+        if (result) {
+            return { 
+                success: true, 
+                message: 'Comic added successfully!', 
+            };
+        } else {
+            return { 
+                success: false, 
+                message: 'Failed to add comic.' 
+            };
+        }
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            const duplicateField = error.sqlMessage.match(/for key '(.+?)'/)[1];  // Extracts the unique key causing the conflict
+            return { 
+                success: false, 
+                message: `Comic with the same comic name already exists. Please use a different name or do u what to add a chapter.` 
+            };
+        }
+        console.error('Error adding comic:', error);
+        return { 
+            success: false, 
+            message: 'An error occurred while adding the comic.', 
+            error: error.message 
+        };
+    }
 };
 
 // Get all comic books with optional filtering
+// Get all comic books with optional filtering
 exports.getAllComics = async (filters) => {
-    return await Comic.findAll(filters);
+    try {
+        console.log(filters)
+        const comics = await Comic.findAll(filters);
+
+        if (comics && comics.length > 0) {
+            return { 
+                success: true, 
+                message: 'Comics retrieved successfully!', 
+                data: comics 
+            };
+        } else {
+            return { 
+                success: false, 
+                message: 'No comics found.' 
+            };
+        }
+    } catch (error) {
+        console.error('Error fetching comics:', error);
+        return { 
+            success: false, 
+            message: 'An error occurred while retrieving the comics.', 
+            error: error.message 
+        };
+    }
 };
 
 // Get a comic book by ID
 exports.getComicById = async (id) => {
-    return await Comic.findById(id);
+    try {
+        const comic = await Comic.findById(id);
+
+        if (comic) {
+            return { 
+                success: true, 
+                message: 'Comic retrieved successfully!', 
+                data: comic 
+            };
+        } else {
+            return { 
+                success: false, 
+                message: 'Comic not found.' 
+            };
+        }
+    } catch (error) {
+        console.error('Error fetching comic by ID:', error);
+        return { 
+            success: false, 
+            message: 'An error occurred while retrieving the comic by ID.', 
+            error: error.message 
+        };
+    }
 };
+
 
 // Update a comic
 exports.updateComic = async (id, comicData) => {
@@ -47,18 +122,16 @@ exports.updateComic = async (id, comicData) => {
 exports.deleteComic = async (id) => {
     // Fetch the current comic details
     const existingComic = await Comic.findById(id);
-
+    console.log(existingComic)
     // If comic doesn't exist, throw an error
     if (!existingComic) {
         throw new Error('Comic not found');
     }
 
-    // Optional: Implement any additional checks before deleting, such as checking if chapters exist
-    // For example, you could prevent deletion if there are chapters associated
+    
     if (existingComic.numberOfChapters > 0) {
         throw new Error('Cannot delete comic with existing chapters');
     }
-
     // Proceed to delete the comic
     return await Comic.delete(id);
 };
