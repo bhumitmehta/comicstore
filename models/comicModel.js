@@ -23,7 +23,7 @@ const Comic = {
         console.log(result)// Use Knex's raw query method
         return result;
     },
-
+    
     // Find all comics with optional filters
     // Find all comics with optional filters and sorting
     findAll: async (filters = {}) => {
@@ -86,10 +86,6 @@ const Comic = {
         const results = await db.raw(sql, values);
         return results[0]; // Return the query result
     },
-    
-    
-    
-
 
     // Find a comic by its ID
     findById: async (id) => {
